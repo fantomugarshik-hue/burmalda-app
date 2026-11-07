@@ -1,13 +1,238 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Burmalda Games</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/App.tsx"></script>
-  </body>
+    <style>
+        /* Сброс стилей */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #000; color: #fff; padding-bottom: 80px; overflow-x: hidden; }
+
+        /* Шапка */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+        .settings-btn { background: #222; border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+        
+        .header-right { display: flex; gap: 10px; align-items: center; }
+        .connect-btn { background: #2ea6ff; color: #fff; border: none; padding: 10px 15px; border-radius: 20px; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 5px; }
+        .balance-btn { background: #222; color: #fff; border: 1px solid #333; padding: 10px 15px; border-radius: 20px; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 5px; }
+
+        /* Баннер */
+        .banner { margin: 10px 20px; background: linear-gradient(90deg, #f3a73f 0%, #f7cf61 100%); border-radius: 15px; padding: 20px; position: relative; overflow: hidden; color: #000; }
+        .banner h2 { font-size: 18px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); margin-bottom: 5px; }
+        .banner p { font-size: 14px; font-weight: bold; color: #fff; }
+        .banner-img { position: absolute; right: -10px; bottom: -10px; width: 100px; height: auto; }
+
+        /* Заголовки секций */
+        .section-title { margin: 25px 20px 15px 20px; font-size: 20px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+
+        /* Сетка карточек */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 20px; }
+        .card { border-radius: 15px; aspect-ratio: 3/4; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 15px 10px; position: relative; overflow: hidden; }
+        .card span { font-weight: bold; font-size: 15px; z-index: 2; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+        
+        /* Цвета карточек */
+        .card-upgrade { background: linear-gradient(180deg, #7a5cf0 0%, #5040b0 100%); }
+        .card-rocket { background: linear-gradient(180deg, #e85c93 0%, #992c59 100%); }
+        .card-pvp { background: linear-gradient(180deg, #40d177 0%, #1d7e3d 100%); }
+        
+        .card-giveaway { background: linear-gradient(180deg, #b04343 0%, #681f1f 100%); }
+        .card-pickaxe { background: linear-gradient(180deg, #407bd1 0%, #1f3d7e 100%); }
+        .card-plinko { background: linear-gradient(180deg, #f3d045 0%, #997d1c 100%); color: #000;}
+        
+        .card-mineslot { background: linear-gradient(180deg, #6d40d1 0%, #2f1f7e 100%); }
+        .card-mines { background: linear-gradient(180deg, #40d18f 0%, #1f7e4d 100%); }
+        .card-repe { background: linear-gradient(180deg, #1f343d 0%, #0d1a1f 100%); }
+        
+        .badge { background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 10px; font-size: 11px; position: absolute; top: 10px; left: 10px; font-weight: bold; }
+
+        /* Нижнее меню */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 10px 0 20px 0; z-index: 10; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #666; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .nav-item.active { color: #00FF7F; }
+        .nav-icon { font-size: 20px; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Шапка -->
+ <div class="header">
+        <button class="settings-btn">⚙️</button>
+        <div class="header-right">
+            <button class="connect-btn">💎 Подключить</button>
+            <button class="balance-btn">⭐ 5 Stars</button>
+        </div>
+    </div>
+
+    <!-- Баннер -->
+    <div class="banner">
+        <h2>Бесплатный кейс</h2>
+        <p>за подписку</p>
+        <!-- Заглушка для картинки сундука -->
+        <div style="position: absolute; right: 20px; bottom: 10px; font-size: 50px; transform: rotate(15deg);">🎁</div>
+    </div>
+
+    <!-- Лучшие игры -->
+    <div class="section-title">🔥 Лучшие игры</div>
+    <div class="grid">
+        <div class="card card-upgrade"><span>Апгрейдер</span></div>
+        <div class="card card-rocket"><span>Ракетка</span></div>
+        <div class="card card-pvp"><span>PVP</span></div>
+    </div>
+
+    <!-- Быстрые игры -->
+    <div class="section-title">⚡ Быстрые игры</div>
+    <div class="grid">
+        <div class="card card-giveaway">
+            <div class="badge">5 активных</div>
+            <span>Розыгрыши</span>
+        </div>
+        <div class="card card-pickaxe"><span>Кирка</span></div>
+        <div class="card card-plinko"><span>Плинко</span></div>
+    </div>
+
+    <!-- Слоты -->
+    <div class="section-title">🎰 Слоты</div>
+    <div class="grid" style="margin-bottom: 20px;">
+        <div class="card card-mineslot"><span>MineSlot</span></div>
+        <div class="card card-mines"><span>Мины</span></div>
+        <div class="card card-repe"><span>Pepe Jump</span></div>
+    </div>
+
+    <!-- Нижнее меню -->
+    <div class="bottom-nav">
+        <div class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            <div>Главная</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">📦</div>
+            <div>Кейсы</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">📊</div>
+            <div>Лидеры</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">👤</div>
+            <div>Профиль</div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram (чтобы убрать стандартные рамки и растянуть на весь экран)
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+            // Устанавливаем цвет фона шапки Телеграма под наш черный дизайн
+            tg.setHeaderColor('#000000');
+            tg.setBackgroundColor('#000000');
+        }
+    </script>
+</body>
 </html>
+await message.answer(
+        "🎁⭐️ <b>Burmalda Games</b> — NFT-подарки за игру!\n\n"
+        "Каждые 24 часа — бесплатный кейс. Внутри: собаки, зевс, фрукты, кирка, ракетка, мины.\n\n"
+        "Жми кнопку ниже и забирай свой первый бонус! 👇",
+        parse_mode="HTML",
+        reply_markup=keyboard,
+    )
+import asyncio
+import os
+
+import asyncpg
+from aiogram import Bot, Dispatcher
+from aiogram.filters import CommandStart, CommandObject
+from aiogram.types import (
+    Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo,
+)
+from aiogram.client.session.aiohttp import AiohttpSession
+from dotenv import load_dotenv
+
+# Загружаем переменные из файла .env
+load_dotenv()
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+DATABASE_URL = os.getenv("DATABASE_URL")
+WEBAPP_URL = os.getenv("WEBAPP_URL")
+
+dp = Dispatcher()
+
+
+@dp.message(CommandStart())
+async def cmd_start(message: Message, command: CommandObject, pool: asyncpg.Pool):
+    user = message.from_user
+
+    # Обработка реферальной ссылки (оставили для работы, но в боте не показываем)
+    referrer_id = None
+    if command.args and command.args.startswith("ref_"):
+        try:
+            referrer_id = int(command.args[4:])
+        except ValueError:
+            pass
+        if referrer_id == user.id:
+            referrer_id = None
+
+    async with pool.acquire() as conn:
+        # Создаем или обновляем пользователя в базе
+        await conn.execute(
+            """
+            INSERT INTO users (tg_id, username, first_name, referrer_id)
+            VALUES ($1, $2, $3, (SELECT tg_id FROM users WHERE tg_id = $4::bigint))
+            ON CONFLICT (tg_id) DO UPDATE
+                SET username = EXCLUDED.username,
+                    first_name = EXCLUDED.first_name
+            """,
+            user.id, user.username, user.first_name, referrer_id,
+        )
+
+    # Создаем кнопки
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        # Первая кнопка на всю ширину
+        [InlineKeyboardButton(text="🎮 Играть", web_app=WebAppInfo(url=WEBAPP_URL))],
+        # Две кнопки в один ряд
+        [
+            InlineKeyboardButton(text="📢 Канал", url="https://t.me/твой_канал"), 
+            InlineKeyboardButton(text="🆘 Поддержка", url="https://t.me/твой_аккаунт")
+        ]
+    ])
+
+    # Отправляем новое сообщение
+    await message.answer(
+        "🎁⭐️ <b>Burmalda Games</b> — NFT-подарки за игру!\n\n"
+        "Каждые 24 часа — бесплатный кейс. Внутри: собаки, зевс, фрукты, кирка, ракетка, мины.\n\n"
+        "Жми кнопку ниже и забирай свой первый бонус! 👇",
+        parse_mode="HTML",
+        reply_markup=keyboard,
+    )
+
+
+async def main():
+    # Подключаемся к базе данных Supabase
+    pool = await asyncpg.create_pool(
+        DATABASE_URL, 
+        statement_cache_size=0, 
+        min_size=1, 
+        max_size=2
+    )
+    dp["pool"] = pool
+    
+    # Настраиваем прокси для обхода блокировок Telegram (Mullvad VPN)
+    # Убедись, что VPN включен!
+    session = AiohttpSession(proxy="socks5://10.64.0.1:1080")
+    
+    bot = Bot(BOT_TOKEN, session=session)
+    
+    print("====================================")
+    print("Бот запущен! Идем в Telegram и пишем /start")
+    print("====================================")
+    
+    await dp.start_polling(bot, polling_timeout=30)
+
+
+if name == "__main__":
+    asyncio.run(main())
